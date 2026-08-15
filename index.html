@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>X取り</title>
+<title>Xメディア抽出</title>
 <style>
   :root{
     --bg:#0b0e11;
@@ -201,10 +201,7 @@ form.addEventListener('submit', async (e)=>{
         const foot = document.createElement('div');
         foot.className = 'media-foot';
         const label = isVideo ? '動画' : '画像';
-        const ext = isVideo ? 'mp4' : 'jpg';
-        foot.innerHTML = `<span>${label} ${i+1}</span><button class="dl-btn" type="button">ダウンロード</button>`;
-        const dlBtn = foot.querySelector('.dl-btn');
-        dlBtn.addEventListener('click', ()=> downloadMedia(m.url, `x_media_${id}_${i+1}.${ext}`, dlBtn));
+        foot.innerHTML = `<span>${label} ${i+1}</span><a href="${m.url}" target="_blank" rel="noopener">開く/保存</a>`;
         card.appendChild(foot);
         gridEl.appendChild(card);
       });
@@ -219,31 +216,6 @@ form.addEventListener('submit', async (e)=>{
     submitBtn.disabled = false;
   }
 });
-
-async function downloadMedia(url, filename, btn){
-  const original = btn.textContent;
-  btn.textContent = '保存中...';
-  btn.disabled = true;
-  try{
-    const res = await fetch(url);
-    if(!res.ok) throw new Error('ダウンロード失敗: ' + res.status);
-    const blob = await res.blob();
-    const blobUrl = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = blobUrl;
-    a.download = filename;
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    setTimeout(()=>URL.revokeObjectURL(blobUrl), 5000);
-    btn.textContent = '保存済み';
-  } catch(err){
-    btn.textContent = '失敗';
-    alert('ダウンロードに失敗しました: ' + err.message);
-  } finally{
-    setTimeout(()=>{ btn.textContent = original; btn.disabled = false; }, 2000);
-  }
-}
 
 function escapeHtml(s){
   return s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
